@@ -7,7 +7,6 @@ let app = new Vue({
         selectedVariant: 0,
         altText: "A pair of socks",
         link: "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=socks",
-        inStock: true,
         onSale: true,
         details: ['80% cotton', '20% polyester', 'Gender-neutral'],
         variants: [
@@ -46,6 +45,9 @@ let app = new Vue({
         },
         image() {
             return this.variants[this.selectedVariant].variantImage
+        },
+        inStock() {
+            return this.variants[this.selectedVariant].variantQuantity
         }
     }
 })
