@@ -46,7 +46,6 @@ Vue.component('product-review', {
                 <div class = "radio-form">
                     <input type="radio" id="yes" value="yes" v-model="recommend">
                     <label for="yes" style="margin-right: 15px;">Yes</label>
-                    
                     <input type="radio" id="no" value="no" v-model="recommend">
                     <label for="no">No</label>
                 </div>
@@ -96,6 +95,14 @@ Vue.component('product-tabs', {
         reviews: {
             type: Array,
             required: true
+        },
+        premium: {
+            type: Boolean,
+            required: true
+        },
+        details: {
+            type: Array,
+            required: true
         }
     },
     template: `
@@ -119,15 +126,29 @@ Vue.component('product-tabs', {
                 </ul>
             </div>
             <div v-show="selectedTab === 'Make a Review'">
-                <!-- Убрали @review-submitted, так как теперь используем eventBus -->
                 <product-review></product-review>
+            </div>
+            <div v-show="selectedTab === 'Shipping'">
+                <p>Shipping cost: {{ shippingCost }}</p>
+            </div>
+            <div v-show="selectedTab === 'Details'">
+                <product-details :details="details"></product-details>
             </div>
         </div>
     `,
     data() {
         return {
-            tabs: ['Reviews', 'Make a Review'],
+            tabs: ['Reviews', 'Make a Review', 'Shipping', 'Details'],
             selectedTab: 'Reviews'
+        }
+    },
+    computed: {
+        shippingCost() {
+            if (this.premium) {
+                return "Free"
+            } else {
+                return "$2.99"
+            }
         }
     }
 })
@@ -150,7 +171,6 @@ Vue.component('product', {
                 <p v-if="inStock">In Stock</p>
                 <p v-else :class="{ 'line-through': !inStock }">Out of Stock</p>
                 <p>{{ sale }}</p>
-                <product-details :details="details"></product-details>
                 <div 
                     class="color-box" 
                     v-for="(variant, index) in variants" 
@@ -173,7 +193,11 @@ Vue.component('product', {
                 >Remove from cart</button>
                 <a :href="link">More products like this</a>
             </div>
-            <product-tabs :reviews="reviews"></product-tabs>
+            <product-tabs 
+                :reviews="reviews" 
+                :premium="premium"
+                :details="details"
+            ></product-tabs>
         </div>
     `,
     data() {
