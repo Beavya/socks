@@ -37,7 +37,11 @@
                 <div class="cart">
                     <p>Cart({{ cart }})</p>
                 </div>
-                <button @click="addToCart">Add to cart</button>
+                <button 
+                    @click="addToCart" 
+                    :disabled="!inStock"
+                    :class="{ disabledButton: !inStock }"
+                >Add to cart</button>
                 <button @click="removeFromCart">Remove from cart</button>
                 <a :href="link">More products like this</a>
             </div>
