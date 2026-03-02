@@ -1,3 +1,19 @@
+let eventBus = new Vue()
+
+Vue.component('product-details', {
+    props: {
+        details: {
+            type: Array,
+            required: true
+        }
+    },
+    template: `
+        <ul>
+            <li v-for="detail in details">{{ detail }}</li>
+        </ul>
+    `
+})
+
 Vue.component('product-review', {
     template: `
         <form class="review-form" @submit.prevent="onSubmit">
@@ -25,12 +41,15 @@ Vue.component('product-review', {
                     <option>1</option>
                 </select>
             </p>
-            <p class = "radio-form">
+            <p>
                 <label>Would you recommend this product?</label><br>
-                <input type="radio" id="yes" value="yes" v-model="recommend">
-                <label for="yes">Yes</label>
-                <input type="radio" id="no" value="no" v-model="recommend">
-                <label for="no">No</label>
+                <div class = "radio-form">
+                    <input type="radio" id="yes" value="yes" v-model="recommend">
+                    <label for="yes" style="margin-right: 15px;">Yes</label>
+                    
+                    <input type="radio" id="no" value="no" v-model="recommend">
+                    <label for="no">No</label>
+                </div>
             </p>
             <p>
                 <input type="submit" value="Submit">
@@ -57,7 +76,7 @@ Vue.component('product-review', {
                     rating: this.rating,
                     recommend: this.recommend
                 }
-                this.$emit('review-submitted', productReview)
+                eventBus.$emit('review-submitted', productReview)
                 this.name = null
                 this.review = null
                 this.rating = null
@@ -70,20 +89,6 @@ Vue.component('product-review', {
             }
         }
     }
-})
-
-Vue.component('product-details', {
-    props: {
-        details: {
-            type: Array,
-            required: true
-        }
-    },
-    template: `
-        <ul>
-            <li v-for="detail in details">{{ detail }}</li>
-        </ul>
-    `
 })
 
 Vue.component('product-tabs', {
@@ -114,7 +119,8 @@ Vue.component('product-tabs', {
                 </ul>
             </div>
             <div v-show="selectedTab === 'Make a Review'">
-                <product-review @review-submitted="addReview"></product-review>
+                <!-- Убрали @review-submitted, так как теперь используем eventBus -->
+                <product-review></product-review>
             </div>
         </div>
     `,
@@ -122,11 +128,6 @@ Vue.component('product-tabs', {
         return {
             tabs: ['Reviews', 'Make a Review'],
             selectedTab: 'Reviews'
-        }
-    },
-    methods: {
-        addReview(productReview) {
-            this.$emit('review-submitted', productReview)
         }
     }
 })
@@ -172,10 +173,7 @@ Vue.component('product', {
                 >Remove from cart</button>
                 <a :href="link">More products like this</a>
             </div>
-            <product-tabs 
-                :reviews="reviews" 
-                @review-submitted="addReview"
-            ></product-tabs>
+            <product-tabs :reviews="reviews"></product-tabs>
         </div>
     `,
     data() {
@@ -215,9 +213,6 @@ Vue.component('product', {
         },
         removeFromCart() {
             this.$emit('remove-from-cart')
-        },
-        addReview(productReview) {
-            this.reviews.push(productReview)
         }
     },
     computed: {
@@ -237,6 +232,11 @@ Vue.component('product', {
                 return this.brand + ' ' + this.product + ' are not on sale'
             }
         }
+    },
+    mounted() {
+        eventBus.$on('review-submitted', productReview => {
+            this.reviews.push(productReview)
+        })
     }
 })
 
