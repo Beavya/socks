@@ -21,6 +21,9 @@
                 <p v-if="inStock">In Stock</p>
                 <p v-else>Out of Stock</p>
                 <span v-show="onSale">On Sale</span>
+                <ul>
+                    <li v-for="detail in details">{{ detail }}</li>
+                </ul>
                 <a :href="link">More products like this</a>
             </div>
         </div>
