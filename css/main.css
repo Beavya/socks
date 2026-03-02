@@ -91,3 +91,7 @@ textarea {
 .line-through {
     text-decoration: line-through;
 }
+
+.radio-form{
+    display: flex;
+}

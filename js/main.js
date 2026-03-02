@@ -25,7 +25,7 @@ Vue.component('product-review', {
                     <option>1</option>
                 </select>
             </p>
-            <p>
+            <p class = "radio-form">
                 <label>Would you recommend this product?</label><br>
                 <input type="radio" id="yes" value="yes" v-model="recommend">
                 <label for="yes">Yes</label>
@@ -86,6 +86,51 @@ Vue.component('product-details', {
     `
 })
 
+Vue.component('product-tabs', {
+    props: {
+        reviews: {
+            type: Array,
+            required: true
+        }
+    },
+    template: `
+        <div>
+            <ul>
+                <span class="tab" 
+                    :class="{ activeTab: selectedTab === tab }"
+                    v-for="(tab, index) in tabs" 
+                    @click="selectedTab = tab"
+                >{{ tab }}</span>
+            </ul>
+            <div v-show="selectedTab === 'Reviews'">
+                <p v-if="!reviews.length">There are no reviews yet.</p>
+                <ul>
+                    <li v-for="review in reviews">
+                        <p>{{ review.name }}</p>
+                        <p>Rating: {{ review.rating }}</p>
+                        <p>{{ review.review }}</p>
+                        <p>Recommend: {{ review.recommend }}</p>
+                    </li>
+                </ul>
+            </div>
+            <div v-show="selectedTab === 'Make a Review'">
+                <product-review @review-submitted="addReview"></product-review>
+            </div>
+        </div>
+    `,
+    data() {
+        return {
+            tabs: ['Reviews', 'Make a Review'],
+            selectedTab: 'Reviews'
+        }
+    },
+    methods: {
+        addReview(productReview) {
+            this.$emit('review-submitted', productReview)
+        }
+    }
+})
+
 Vue.component('product', {
     props: {
         premium: {
@@ -127,19 +172,10 @@ Vue.component('product', {
                 >Remove from cart</button>
                 <a :href="link">More products like this</a>
             </div>
-            <div>
-                <h2>Reviews</h2>
-                <p v-if="!reviews.length">There are no reviews yet.</p>
-                <ul>
-                    <li v-for="review in reviews">
-                        <p>{{ review.name }}</p>
-                        <p>Rating: {{ review.rating }}</p>
-                        <p>{{ review.review }}</p>
-                        <p>Recommend: {{ review.recommend }}</p>
-                    </li>
-                </ul>
-            </div>
-            <product-review @review-submitted="addReview"></product-review>
+            <product-tabs 
+                :reviews="reviews" 
+                @review-submitted="addReview"
+            ></product-tabs>
         </div>
     `,
     data() {
