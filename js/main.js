@@ -2,6 +2,7 @@ let app = new Vue({
     el: '#app',
     data: {
         product: "Socks",
+        brand: 'Vue Mastery',
         description: "A pair of warm, fuzzy socks",
         image: "./assets/vmSocks-green-onWhite.jpg",
         altText: "A pair of socks",
@@ -35,6 +36,11 @@ let app = new Vue({
             if (this.cart > 0) {
                 this.cart -= 1
             }
+        }
+    },
+    computed: {
+        title() {
+            return this.brand + ' ' + this.product
         }
     }
 })
