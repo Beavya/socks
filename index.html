@@ -33,7 +33,8 @@
                 <div class="cart">
                     <p>Cart({{ cart }})</p>
                 </div>
-                <button v-on:click="addToCart">Add to cart</button>
+                <button @click="addToCart">Add to cart</button>
+                <button @click="removeFromCart">Remove from cart</button>
                 <a :href="link">More products like this</a>
             </div>
         </div>
