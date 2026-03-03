@@ -43,7 +43,7 @@ Vue.component('product-review', {
             </p>
             <p>
                 <label>Would you recommend this product?</label><br>
-                <div class = "radio-form">
+                <div class="radio-form">
                     <input type="radio" id="yes" value="yes" v-model="recommend" :disabled="rating !== null && rating < 4">
                     <label for="yes" :class="{ disabled: rating !== null && rating < 4 }">Yes</label>
                     <input type="radio" id="no" value="no" v-model="recommend" :disabled="rating !== null && rating >= 4">
@@ -67,8 +67,17 @@ Vue.component('product-review', {
     methods: {
         onSubmit() {
             this.errors = []
-            
-            if (this.name && this.review && this.rating && this.recommend) {
+            if (!this.name) this.errors.push("Name required.")
+            if (!this.review) this.errors.push("Review required.")
+            if (!this.rating) this.errors.push("Rating required.")
+            if (!this.recommend) this.errors.push("Recommendation required.")
+            if (this.rating < 4 && this.rating !== null && this.recommend === "yes") {
+                this.errors.push("Cannot recommend product with rating below 4. Please select 'No'.")
+            }
+            if (this.rating >= 4 && this.rating !== null && this.recommend === "no") {
+                this.errors.push("Must recommend product with rating 4 or above. Please select 'Yes'.")
+            }
+            if (this.errors.length === 0) {
                 let productReview = {
                     name: this.name,
                     review: this.review,
@@ -80,14 +89,60 @@ Vue.component('product-review', {
                 this.review = null
                 this.rating = null
                 this.recommend = null
-            } else {
-                if (!this.name) this.errors.push("Name required.")
-                if (!this.review) this.errors.push("Review required.")
-                if (!this.rating) this.errors.push("Rating required.")
-                if (!this.recommend) this.errors.push("Recommendation required.")
             }
         }
     }
+})
+
+Vue.component('cart-modal', {
+    props: {
+        show: {
+            type: Boolean,
+            required: true
+        },
+        cartItems: {
+            type: Array,
+            required: true
+        },
+        cartLength: {
+            type: Number,
+            required: true
+        },
+        premium: {
+            type: Boolean,
+            required: true
+        }
+    },
+    template: `
+        <div class="modal-overlay" v-if="show" @click.self="$emit('close')">
+            <div class="modal">
+                <button class="modal-close" @click="$emit('close')">&times;</button>
+                <h2>Shopping Cart</h2>
+                <div v-if="cartItems.length > 0">
+                    <div v-for="(item, index) in cartItems" :key="index" class="cart-item">
+                        <img :src="item.image" :alt="item.color" class="cart-item-image">
+                        <div class="cart-item-info">
+                            <h3>Vue Mastery Socks - {{ item.color }}</h3>
+                            <p>Color: {{ item.color }}</p>
+                            <p>Price:</p>
+                        </div>
+                    </div>
+                    <div class="shipping-info">
+                        <b>Shipping:</b>
+                        <p>
+                            {{ premium ? 'Free Shipping (Premium Member)' : 'Shipping Cost: $2.99' }}
+                        </p>
+                        <b>Total items: {{ cartLength }}</b> </br>
+                        <b>Total cost:</b>
+                    </div>
+                </div>
+                <div v-else class="empty-cart">
+                    <p>Your cart is empty</p>
+                    <p>Add some products to get started!</p>
+                </div>
+            </div>
+        </div>
+    `
 })
 
 Vue.component('product-tabs', {
@@ -268,14 +323,32 @@ let app = new Vue({
     el: '#app',
     data: {
         premium: true,
-        cart: []
+        cart: [],
+        cartItems: [],
+        showCartModal: false
     },
     methods: {
         updateCart(id) {
             this.cart.push(id)
+            this.updateCartItems()
         },
         removeFromCart() {
             this.cart.pop()
-        }
+            this.updateCartItems()
+        },
+        openCartModal() {
+            this.updateCartItems()
+            this.showCartModal = true
+        },
+        closeCartModal() {
+            this.showCartModal = false
+        },
+        updateCartItems() {
+            this.cartItems = this.cart.map(id => 
+            id === 2234 
+            ? { color: 'green', image: "./assets/vmSocks-green-onWhite.jpg" }
+            : { color: 'blue', image: "./assets/vmSocks-blue-onWhite.jpg" }
+    )
+}
     }
 })

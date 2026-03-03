@@ -11,9 +11,18 @@
 </head>
 <body>
     <div id="app">
-        <div class="cart">
+        <div class="cart" @click="openCartModal">
             <p>Cart({{ cart.length }})</p>
         </div>
+        
+        <cart-modal 
+            :show="showCartModal" 
+            :cart-items="cartItems"
+            :cart-length="cart.length"
+            :premium="premium"
+            @close="closeCartModal"
+        ></cart-modal>
+        
         <product 
             :premium="premium" 
             @add-to-cart="updateCart"
