@@ -44,10 +44,10 @@ Vue.component('product-review', {
             <p>
                 <label>Would you recommend this product?</label><br>
                 <div class = "radio-form">
-                    <input type="radio" id="yes" value="yes" v-model="recommend">
-                    <label for="yes" style="margin-right: 15px;">Yes</label>
-                    <input type="radio" id="no" value="no" v-model="recommend">
-                    <label for="no">No</label>
+                    <input type="radio" id="yes" value="yes" v-model="recommend" :disabled="rating !== null && rating < 4">
+                    <label for="yes" :class="{ disabled: rating !== null && rating < 4 }">Yes</label>
+                    <input type="radio" id="no" value="no" v-model="recommend" :disabled="rating !== null && rating >= 4">
+                    <label for="no" :class="{ disabled: rating !== null && rating >= 4 }">No</label>
                 </div>
             </p>
             <p>
